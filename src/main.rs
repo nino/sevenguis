@@ -1,3 +1,5 @@
+mod memory_game;
+
 slint::slint! {
     import { Button, VerticalBox } from "std-widgets.slint";
 
@@ -86,12 +88,16 @@ slint::slint! {
     export component MainWindow inherits Window  {
         callback make_counter <=> counter_button.clicked;
         callback make_temp_conv <=> temp_conv_button.clicked;
+        callback make_memory_game <=> memory_game_button.clicked;
         VerticalBox {
             counter_button := Button {
                 text: "Open counter";
             }
             temp_conv_button := Button {
                 text: "Open temperature converter";
+            }
+            memory_game_button := Button {
+                text: "Open memory game";
             }
         }
     }
@@ -106,6 +112,7 @@ fn main() -> Result<(), slint::PlatformError> {
     let main_window = make_main_window()?;
     let counter = make_counter()?;
     let temp_conv = make_temp_conv()?;
+    let game = memory_game::make_memory_game()?;
 
     main_window.on_make_counter(move || {
         counter.show().unwrap();
@@ -113,6 +120,10 @@ fn main() -> Result<(), slint::PlatformError> {
 
     main_window.on_make_temp_conv(move || {
         temp_conv.show().unwrap();
+    });
+
+    main_window.on_make_memory_game(move || {
+        game.show().unwrap();
     });
 
     main_window.run()

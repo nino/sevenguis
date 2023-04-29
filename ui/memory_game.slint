@@ -1,0 +1,82 @@
+struct TileData {
+    image: image,
+    image_visible: bool,
+    solved: bool,
+}
+
+export component MemoryTile inherits Rectangle {
+    callback clicked;
+    in property <bool> open_curtain;
+    in property <bool> solved;
+    in property <image> icon;
+
+    width: 64px;
+    height: 64px;
+    background: #3960D5;
+
+    Image {
+        source: icon;
+        width: parent.width;
+        height: parent.height;
+    }
+
+    Rectangle {
+        background: #193076;
+        x: 0px;
+        width: open_curtain ? 0px : (parent.width / 2);
+        height: parent.height;
+        animate width { duration: 250ms; easing: ease-in; }
+    }
+
+    Rectangle {
+        background: #193076;
+        x: open_curtain ? parent.width : (parent.width / 2);
+        width: open_curtain ? 0px : (parent.width / 2);
+        height: parent.height;
+        animate width { duration: 250ms; easing: ease-in; }
+        animate x { duration: 250ms; easing: ease-in; }
+    }
+
+    TouchArea {
+        width: 100%;
+        height: 100%;
+        clicked => { root.clicked(); }
+    }
+}
+
+export component MemoryGame inherits Window {
+    width: 326px;
+    height: 326px;
+
+    property <length> tile_size: 64px;
+
+    callback check_if_pair_solved();
+    in property <bool> disable_tiles;
+
+    in property <[TileData]> memory_tiles: [
+        { image: @image-url("../icons/at.png") },
+        { image: @image-url("../icons/balance-scale.png") },
+        { image: @image-url("../icons/bicycle.png") },
+        { image: @image-url("../icons/bus.png") },
+        { image: @image-url("../icons/cloud.png") },
+        { image: @image-url("../icons/cogs.png") },
+        { image: @image-url("../icons/motorcycle.png") },
+        { image: @image-url("../icons/video.png") },
+    ];
+
+    for tile[i] in memory_tiles : MemoryTile {
+        x: mod(i, 4) * (parent.width - (tile_size / 2)) / 4;
+        y: floor(i / 4) * (parent.height - (tile_size / 2)) / 4;
+        width: tile_size;
+        height: tile_size;
+        open_curtain: tile.image_visible || tile.solved;
+        solved: tile.solved;
+        icon: tile.image;
+        clicked => {
+            if (!root.disable_tiles) {
+                tile.image_visible = !tile.image_visible;
+                root.check_if_pair_solved();
+            }
+        }
+    }
+}
