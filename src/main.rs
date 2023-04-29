@@ -1,5 +1,14 @@
 slint::include_modules!();
 
+slint::slint! {
+    export component HelloWorld {
+        Text {
+            text: "hello world";
+            color: green;
+        }
+    }
+}
+
 fn main() -> Result<(), slint::PlatformError> {
     let ui = AppWindow::new()?;
 
